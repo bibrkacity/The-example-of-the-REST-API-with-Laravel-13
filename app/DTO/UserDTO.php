@@ -4,10 +4,14 @@ namespace App\DTO;
 
 use Illuminate\Http\Request;
 
+/**
+ * DTO for User's list
+ */
 readonly class UserDTO extends DTO
 {
     public ?string $email;
 
+    #[\Override]
     protected function fromRequest(Request $request): void
     {
         parent::fromRequest($request);
@@ -16,6 +20,7 @@ readonly class UserDTO extends DTO
 
     }
 
+    #[\Override]
     protected function getRules(Request $request): array
     {
 
@@ -25,6 +30,7 @@ readonly class UserDTO extends DTO
         return $rules;
     }
 
+    #[\Override]
     protected function getSortNameDefault(): string
     {
         return 'name';

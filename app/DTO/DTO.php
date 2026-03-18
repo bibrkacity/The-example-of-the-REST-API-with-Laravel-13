@@ -8,15 +8,41 @@ use Illuminate\Validation\ValidationException;
 
 /**
  *  Base class for DTO-classes
+ *  DTO - Data Transfer Object, a class that contains data that is transferred
+ *        between the method index () of the controller and the repository.
  */
 abstract readonly class DTO
 {
-    public const PER_PAGE = 20;
+    public const int PER_PAGE = 20;
 
+    /**
+     * Page number for pagination. Default 1
+     * @var int
+     */
     public int $page;
+
+    /**
+     * Number of items per page. Default self::PER_PAGE
+     * @var int
+     */
     public int $perPage;
+
+    /**
+     * Search query string. Default null
+     * @var string|null
+     */
     public ?string $query;
+
+    /**
+     * Sorting column name. Default $this->getSortNameDefault()
+     * @var string
+     */
     public string $sortName;
+
+    /**
+     * Sorting direction. Default 'asc'
+     * @var string
+     */
     public string $sortDir;
 
     abstract protected function getSortNameDefault(): string;

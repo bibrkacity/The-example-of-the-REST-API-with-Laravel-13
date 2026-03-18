@@ -109,7 +109,6 @@ class UserController extends ApiController
 
         return new JsonResponse(data: $response, status: ResponseAlias::HTTP_OK, json: false);
 
-
     }
 
     #[OA\Post(

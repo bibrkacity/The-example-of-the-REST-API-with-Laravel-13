@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use Exception;
+use App\Exceptions\RepositoryException;
 use Illuminate\Database\Eloquent\Builder;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use Throwable;
 
+/**
+ * The base class for all repositories
+ * The repository is responsible for the interaction with the database
+ */
 class Repository
 {
-    protected mixed $dto;
-
     /**
-     * @throws Exception
+     * @throws RepositoryException
      */
     protected function findByDTOToArray(Builder $builder, int $page, int $perPage): array
     {
@@ -27,9 +28,7 @@ class Repository
         try {
             $result = $builder->get();
         } catch (Throwable $e) {
-            $message = $e->getMessage();
-            $httpCode = ResponseAlias::HTTP_INTERNAL_SERVER_ERROR;
-            throw new \Exception($message, $httpCode);
+            throw new RepositoryException(message:$e->getMessage(), args: ['trace' => $e->getTraceAsString()]);
         }
 
         $data = [];

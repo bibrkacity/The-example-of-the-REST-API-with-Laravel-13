@@ -55,6 +55,7 @@ class UserTest extends TestCaseCrud
             $newData,
             'id',
         );
+        $this->deleteTestRecords(User::class, 'name', self::NAME_TEST_UPDATE);
     }
 
     public function destroy(): void
@@ -73,5 +74,6 @@ class UserTest extends TestCaseCrud
             'api.v1.users.show',
             'id',
         );
+        $this->deleteTestRecords(User::class, 'name', self::NAME_TEST_DELETE);
     }
 }
