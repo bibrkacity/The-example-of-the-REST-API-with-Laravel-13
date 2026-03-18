@@ -1,5 +1,7 @@
 # The example of REST API with Laravel 13, php 8.5
 
+This is an example of REST API with Laravel 13, for learning purposes. I will be glad to see your pull requests.
+
 ## Installation
 
 1. Clone this repository (https://github.com/bibrkacity/REST-example-with-Laravel-13.git) and `cd` into root folder ( *your-path*/rest-example-13)
@@ -26,6 +28,12 @@ First, you need to log in with `test@example.com` and `password`:
 5. Click `Authorize` in a popup window
 
 Now you can use Swagger UI to test your API.
+
+## MySQL console
+
+run `./vendor/bin/sail mysql` to open MySQL console. 
+
+Also, you can use `mysql -h0.0.0.0 -P3307 -uroot -p` (password `Password1234`) to connect to MySQL.
 
 ## Unit testing of the REST API
 
