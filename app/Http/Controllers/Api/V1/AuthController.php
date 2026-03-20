@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Exceptions\ApiException;
 use App\Models\User;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,8 +15,8 @@ class AuthController extends ApiController
 {
     #[OA\Post(
         path: '/login',
-        description: 'Authorization and return API-token and 2FA status',
-        summary: 'Authorization and return API-token and 2FA status',
+        description: 'Authorization and return API-token',
+        summary: 'Authorization and return API-token',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
@@ -40,28 +40,24 @@ class AuthController extends ApiController
     )]
     public function login(Request $request): JsonResponse
     {
-        try {
 
-            $email = trim($request->get('email'));
-            $password = trim($request->get('password'));
+        $email = trim($request->input('email'));
+        $password = trim($request->input('password'));
 
-            $query = User::query()
-                ->where('email', $email);
-            $user = $query->first();
+        $query = User::query()
+            ->where('email', $email);
+        $user = $query->first();
 
-            if (! $user || ! Hash::check($password, $user->password)) {
-                throw new Exception('Invalid login or password', ResponseAlias::HTTP_UNAUTHORIZED);
-            }
-
-            $token = $user->createToken('start');
-
-            return new JsonResponse(data: [
-                'token' => $token->plainTextToken,
-            ], status: ResponseAlias::HTTP_OK, json: false);
-
-        } catch (\Throwable $e) {
-            throw new Exception($e->getMessage(), $e->getCode());
+        if (! $user || ! Hash::check($password, $user->password)) {
+            throw new ApiException('Invalid login or password', ResponseAlias::HTTP_UNAUTHORIZED);
         }
+
+        $token = $user->createToken('start');
+
+        return new JsonResponse(data: [
+            'token' => $token->plainTextToken,
+        ], status: ResponseAlias::HTTP_OK, json: false);
+
     }
 
     #[OA\Get(
