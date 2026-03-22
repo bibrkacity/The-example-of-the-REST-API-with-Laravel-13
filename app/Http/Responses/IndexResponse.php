@@ -60,6 +60,7 @@ readonly class IndexResponse implements Responsable
         $meta = [];
         $meta['current_page'] = $this->dto->page;
         $meta['last_page'] = ceil($this->total / $this->dto->perPage);
+        $meta['path'] = $this->dto->toPath();
         $meta['per_page'] = $this->dto->perPage;
         $meta['total'] = $this->total;
 

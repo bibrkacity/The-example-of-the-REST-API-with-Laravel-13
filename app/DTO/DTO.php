@@ -67,6 +67,11 @@ abstract readonly class DTO
         return $array;
     }
 
+    public function toPath(): string
+    {
+        return route($this->getRouteName());
+    }
+
     public function toLink(bool $withoutPage = false): string
     {
         $defaults = $this->getDefaults();
