@@ -1,6 +1,6 @@
 # The example of REST API with Laravel 13, php 8.5
 
-This is an example of REST API with Laravel 13, for learning purposes. I will be glad to see your pull requests.
+This is an example of REST API with Laravel 13, for learning purposes. Use DTO and Repository patterns for index().  I will be glad to see your pull requests.
 
 ## Installation
 

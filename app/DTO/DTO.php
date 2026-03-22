@@ -47,6 +47,8 @@ abstract readonly class DTO
 
     abstract protected function getSortNameDefault(): string;
 
+    abstract protected function getRouteName(): string;
+
     public function __construct(Request $request)
     {
         $this->fromRequest($request);
@@ -56,27 +58,33 @@ abstract readonly class DTO
     {
         $array = [];
         foreach ($this as $name => $value) {
-            if (is_object($value)) {
-                $array[$name] = $this->objectToArray($value);
-            } else {
-                $array[$name] = $value;
+            if ($name == 'routeName') {
+                continue;
             }
+            $array[$name] = $value;
         }
 
         return $array;
     }
 
-    protected function objectToArray($obj): array
+    public function toLink(bool $withoutPage = false): string
     {
-        $result = [];
+        $defaults = $this->getDefaults();
 
-        foreach ($obj as $name => $value) {
-            if (! is_object($value)) {
-                $result[$name] = $value;
+        $args = [];
+        foreach ($this as $name => $value) {
+            if ($name == 'routeName' || $value == $defaults[$name] || ($withoutPage && $name == 'page')) {
+                continue;
             }
+            $args[$name] = $value;
         }
 
-        return $result;
+        $query = http_build_query($args);
+        if ($query !== '') {
+            $query = '?'.$query;
+        }
+
+        return route($this->getRouteName()).$query;
     }
 
     protected function fromRequest(Request $request): void
@@ -87,11 +95,13 @@ abstract readonly class DTO
             throw new ValidationException($validator);
         }
 
-        $this->page = $request->input('page', 1);
-        $this->perPage = $request->input('per_page', self::PER_PAGE);
-        $this->query = $request->input('query');
-        $this->sortName = $request->input('sort_name', $this->getSortNameDefault());
-        $this->sortDir = $request->input('sort_dir', 'asc');
+        $defaults = $this->getDefaults();
+
+        $this->page = $request->input('page', $defaults['page']);
+        $this->perPage = $request->input('per_page', $defaults['perPage']);
+        $this->query = $request->input('query', $defaults['query']);
+        $this->sortName = $request->input('sort_name', $defaults['sortName']);
+        $this->sortDir = $request->input('sort_dir', $defaults['sortDir']);
 
     }
 
@@ -104,6 +114,17 @@ abstract readonly class DTO
             'sort_dir' => 'in:asc,desc',
             'sort_name' => 'string',
             'query' => 'string',
+        ];
+    }
+
+    protected function getDefaults(): array
+    {
+        return [
+            'page' => 1,
+            'perPage' => self::PER_PAGE,
+            'sortDir' => 'asc',
+            'sortName' => $this->getSortNameDefault(),
+            'query' => null,
         ];
     }
 }

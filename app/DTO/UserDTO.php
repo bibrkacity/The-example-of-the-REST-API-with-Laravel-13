@@ -35,4 +35,19 @@ readonly class UserDTO extends DTO
     {
         return 'name';
     }
+
+    #[\Override]
+    protected function getRouteName(): string
+    {
+        return 'api.v1.users.index';
+    }
+
+    #[\Override]
+    protected function getDefaults(): array
+    {
+        return [
+            ...parent::getDefaults(),
+            'email' => null,
+        ];
+    }
 }

@@ -9,6 +9,7 @@ use App\Exceptions\ObjectNotFoundException;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\User\StoreRequest;
 use App\Http\Requests\User\UpdateRequest;
+use App\Http\Responses\IndexResponse;
 use App\Interfaces\IUserRepository;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -73,7 +74,7 @@ class UserController extends ApiController
                 required: false,
                 schema: new OA\Schema(
                     type: 'string',
-                    default: 'created_at',
+                    default: 'name',
                     enum: ['name', 'email', 'created_at', 'updated_at'],
                 ),
             ),
@@ -85,7 +86,7 @@ class UserController extends ApiController
                 required: false,
                 schema: new OA\Schema(
                     type: 'string',
-                    default: 'desc',
+                    default: 'asc',
                     enum: ['asc', 'desc'],
                 ),
             ),
@@ -95,19 +96,14 @@ class UserController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_OK, description: 'List of users by filters'),
         ]
     )]
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): IndexResponse
     {
 
         $dto = new UserDTO($request);
         $data = $this->userRepository->findByDTO($dto);
         $total = $this->userRepository->countByDTO($dto);
-        $response = [
-            'dto' => $dto->toArray(),
-            'total' => $total,
-            'data' => $data,
-        ];
 
-        return new JsonResponse(data: $response, status: ResponseAlias::HTTP_OK, json: false);
+        return new IndexResponse($data, $dto, $total);
 
     }
 
