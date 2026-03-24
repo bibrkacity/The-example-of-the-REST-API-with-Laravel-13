@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Exceptions\ApiException;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Responses\LoginResponse;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,7 +40,7 @@ class AuthController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_OK, description: 'API-token'),
         ]
     )]
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): LoginResponse
     {
 
         $email = trim($request->input('email'));
@@ -54,9 +56,7 @@ class AuthController extends ApiController
 
         $token = $user->createToken('start');
 
-        return new JsonResponse(data: [
-            'token' => $token->plainTextToken,
-        ], status: ResponseAlias::HTTP_OK, json: false);
+        return new LoginResponse($user, $token->plainTextToken);
 
     }
 

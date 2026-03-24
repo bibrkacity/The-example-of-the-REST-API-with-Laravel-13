@@ -23,7 +23,7 @@ abstract class TestCaseCrud extends TestCase
                 return TestCaseCrud::$token;
             }
 
-            $url = route('login');
+            $url = route('api.v1.login');
             $credentials = config('auth.test_admin_credentials');
 
             $response = Http::post($url, $credentials);
