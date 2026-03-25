@@ -90,16 +90,14 @@ class AuthController extends ApiController
         ],
         tags: ['Auth'],
         responses: [
-            new OA\Response(response: ResponseAlias::HTTP_OK, description: 'Message Ok'),
+            new OA\Response(response: ResponseAlias::HTTP_NO_CONTENT, description: 'Successfully logout'),
         ]
     )]
     public function logout(): JsonResponse
     {
 
         $user = auth()->user();
-        $user->tokens()->delete(); //Все устройства
-
-        // $user->currentAccessToken()->delete(); //Только текущее устройство
-        return new JsonResponse(data: ['data' => ['message' => 'Ok']], status: ResponseAlias::HTTP_OK, json: false);
+        $user->tokens()->delete();
+        return new JsonResponse(data: null, status: ResponseAlias::HTTP_NO_CONTENT, json: false);
     }
 }
