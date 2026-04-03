@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\User\DestroyUser;
+use App\Actions\User\ShowUser;
+use App\Actions\User\StoreUser;
+use App\Actions\User\UpdateUser;
 use App\DTO\UserDTO;
-use App\Exceptions\ObjectNotFoundException;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Requests\User\DestroyRequest;
+use App\Http\Requests\User\ShowRequest;
 use App\Http\Requests\User\StoreRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Http\Responses\IndexResponse;
 use App\Interfaces\IUserRepository;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -160,14 +164,11 @@ class UserController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_OK, description: 'Created user in JSON'),
         ]
     )]
-    public function store(StoreRequest $request): JsonResponse
+    public function store(StoreRequest $request, StoreUser $action): JsonResponse
     {
-        $requestAll = $request->all();
+        $data = $action->handle($request);
 
-        $user = new User($requestAll);
-        $user->save();
-
-        return new JsonResponse(data: ['data' => $user->toArray()], status: ResponseAlias::HTTP_CREATED, json: false);
+        return new JsonResponse(data: ['data' => $data], status: ResponseAlias::HTTP_CREATED, json: false);
     }
 
     #[OA\Get(
@@ -195,15 +196,11 @@ class UserController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_UNAUTHORIZED, description: 'Unauthorized'),
         ]
     )]
-    public function show(Request $request, int $id): JsonResponse
+    public function show(ShowRequest $request, int $id, ShowUser $action): JsonResponse
     {
+        $data = $action->handle($id);
 
-        $user = User::find($id);
-        if ($user === null) {
-            throw new ObjectNotFoundException('User with id='.$id." does not exist");
-        }
-
-        return new JsonResponse(data: ['data' => $user->toArray()], status: ResponseAlias::HTTP_OK, json: false);
+        return new JsonResponse(data: ['data' => $data], status: ResponseAlias::HTTP_OK, json: false);
     }
 
     #[OA\Put(
@@ -264,24 +261,11 @@ class UserController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_OK, description: 'Modified user in JSON'),
         ]
     )]
-    public function update(UpdateRequest $request, int $id): JsonResponse
+    public function update(UpdateRequest $request, int $id, UpdateUser $action): JsonResponse
     {
-        $requestAll = $request->all();
-        $user = User::find($id);
-        if ($user === null) {
-            throw new ObjectNotFoundException('User with id='.$id." does not exist");
-        }
+        $data = $action->handle($request, $id);
 
-        if (isset($requestAll['password']) && ($requestAll['password'] != '')) {
-            if ($request->user()->cannot('changePassword', $user)) {
-                unset($requestAll['password']);
-            }
-        }
-
-        $user->fill($requestAll);
-        $user->save();
-
-        return new JsonResponse(data: ['data' => $user->toArray(false)], status: ResponseAlias::HTTP_OK, json: false);
+        return new JsonResponse(data: ['data' => $data], status: ResponseAlias::HTTP_OK, json: false);
     }
 
     #[OA\Delete(
@@ -307,16 +291,9 @@ class UserController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_NO_CONTENT, description: 'Successfully deleted'),
         ]
     )]
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(DestroyRequest $request, int $id, DestroyUser $action): JsonResponse
     {
-
-        $user = User::find($id);
-
-        if ($user === null) {
-            throw new ObjectNotFoundException('User with id='.$id." does not exist");
-        }
-
-        $user->delete();
+        $action->handle($id);
 
         return new JsonResponse(data: null, status: ResponseAlias::HTTP_NO_CONTENT, json: false);
     }

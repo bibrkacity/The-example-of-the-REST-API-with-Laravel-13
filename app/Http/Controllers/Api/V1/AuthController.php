@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Exceptions\ApiException;
+use App\Actions\Auth\Login;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Responses\LoginResponse;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
-use App\Http\Controllers\Api\ApiController;
 
 class AuthController extends ApiController
 {
@@ -40,24 +38,9 @@ class AuthController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_OK, description: 'API-token'),
         ]
     )]
-    public function login(LoginRequest $request): LoginResponse
+    public function login(LoginRequest $request, Login $action): LoginResponse
     {
-
-        $email = trim($request->input('email'));
-        $password = trim($request->input('password'));
-
-        $query = User::query()
-            ->where('email', $email);
-        $user = $query->first();
-
-        if (! $user || ! Hash::check($password, $user->password)) {
-            throw new ApiException('Invalid login or password', ResponseAlias::HTTP_UNAUTHORIZED);
-        }
-
-        $token = $user->createToken('start');
-
-        return new LoginResponse($user, $token->plainTextToken);
-
+        return $action->handle($request);
     }
 
     #[OA\Get(
@@ -74,11 +57,7 @@ class AuthController extends ApiController
     )]
     public function getUser(Request $request): JsonResponse
     {
-
-        $user = $request->user();
-
-        return new JsonResponse(data: ['data' => $user->toArray()], status: ResponseAlias::HTTP_OK, json: false);
-
+        return new JsonResponse(data: ['data' => $request->user()->toArray()], status: ResponseAlias::HTTP_OK, json: false);
     }
 
     #[OA\Get(
@@ -93,11 +72,9 @@ class AuthController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_NO_CONTENT, description: 'Successfully logout'),
         ]
     )]
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
-
-        $user = auth()->user();
-        $user->tokens()->delete();
+        $request->user()->tokens()->delete();
 
         return new JsonResponse(data: null, status: ResponseAlias::HTTP_NO_CONTENT, json: false);
     }
