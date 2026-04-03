@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Actions\User\DestroyUser;
+use App\Actions\User\IndexUser;
 use App\Actions\User\ShowUser;
 use App\Actions\User\StoreUser;
 use App\Actions\User\UpdateUser;
-use App\DTO\UserDTO;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\User\DestroyRequest;
+use App\Http\Requests\User\IndexRequest;
 use App\Http\Requests\User\ShowRequest;
 use App\Http\Requests\User\StoreRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Http\Responses\IndexResponse;
 use App\Interfaces\IUserRepository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
@@ -100,15 +100,9 @@ class UserController extends ApiController
             new OA\Response(response: ResponseAlias::HTTP_OK, description: 'List of users by filters'),
         ]
     )]
-    public function index(Request $request): IndexResponse
+    public function index(IndexRequest $request, IndexUser $action): IndexResponse
     {
-
-        $dto = new UserDTO($request);
-        $data = $this->userRepository->findByDTO($dto);
-        $total = $this->userRepository->countByDTO($dto);
-
-        return new IndexResponse($data, $dto, $total);
-
+        return $action->handle($request, $this->userRepository);
     }
 
     #[OA\Post(
