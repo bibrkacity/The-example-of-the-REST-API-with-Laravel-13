@@ -1,7 +1,7 @@
 # The example of REST API with Laravel 13, php 8.5
 
 This is an example of REST API with Laravel 13, for learning purposes. 
-Use Action classes foe clean code of the controllers.
+Use Action classes for clean code of the controllers according to [Laracast](https://laracasts.com/series/laravel-from-scratch-2026/episodes/37).
 Use DTO and Repository patterns for index(). 
 
 I will be glad to see your issues or your pull requests.
