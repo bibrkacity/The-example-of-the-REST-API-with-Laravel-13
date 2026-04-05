@@ -8,7 +8,7 @@ I will be glad to see your issues or your pull requests.
 
 ## Installation
 
-1. Clone this repository (https://github.com/bibrkacity/REST-example-with-Laravel-13.git) and `cd` into root folder ( *your-path*/rest-example-13)
+1. Clone this repository (https://github.com/bibrkacity/The-example-of-the-REST-API-with-Laravel-13.git) and `cd` into root folder ( *your-path*/rest-example-13)
 2. Copy `.env.example` to `.env`
 3. Run `composer install`
 4. Run `./vendor/bin/sail up`
