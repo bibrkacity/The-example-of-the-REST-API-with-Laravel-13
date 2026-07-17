@@ -6,6 +6,16 @@ Use DTO and Repository patterns for index().
 
 I will be glad to see your issues or your pull requests.
 
+<!-- TOC -->
+* [The example of REST API with Laravel 13, php 8.5](#the-example-of-rest-api-with-laravel-13-php-85)
+  * [Installation](#installation)
+  * [Work with Swagger UI](#work-with-swagger-ui)
+  * [MySQL console](#mysql-console)
+  * [Unit testing of the REST API](#unit-testing-of-the-rest-api)
+  * [Logging of the models changing](#logging-of-the-models-changing)
+  * [Learning the REST API](#learning-the-rest-api)
+<!-- TOC -->
+
 ## Installation
 
 1. Clone this repository (https://github.com/bibrkacity/The-example-of-the-REST-API-with-Laravel-13.git) and `cd` into root folder ( *your-path*/rest-example-13)
@@ -42,6 +52,21 @@ Also, you can use `mysql -h0.0.0.0 -P3307 -uroot -p` (password `Password1234`) t
 ## Unit testing of the REST API
 
 Run `php artisan test` to run unit tests for the REST API endpoints.
+
+## Logging of the models changing
+
+Model does not save logs of the changes by default. 
+
+To enable logging of the changes, you need to override the property `loggable` in the model. It is an array of the SQL commands that should be logged. There are three possible commands: `insert`, `update`, `delete`.
+
+You can see the example of the model in the `app/Models/User.php` file:
+
+```php
+    #[\Override]
+    protected array $loggable = ['insert','update','delete'];
+```
+
+Log about the changes will be saved in the `app/Models/EloquentLog` model (table `eloquent_logs`).
 
 ## Learning the REST API
 
