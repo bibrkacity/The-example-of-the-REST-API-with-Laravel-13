@@ -21,8 +21,7 @@ class User extends Authenticatable
     use Notifiable;
     use HasApiTokens;
 
-    #[\Override]
-    protected array $loggable = ['insert','update','delete'];
+     protected array $loggable = ['insert','update','delete'];
 
     /**
      * Get the attributes that should be cast.

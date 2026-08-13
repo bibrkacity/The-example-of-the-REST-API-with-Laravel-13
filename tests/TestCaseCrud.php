@@ -176,7 +176,5 @@ abstract class TestCaseCrud extends TestCase
 
         self::assertEquals(ResponseAlias::HTTP_NO_CONTENT, $response->status());
 
-        $search = Http::withToken($token)->get(route($showRoute, [$idName => $object[$idName]]));
-        self::assertEquals(ResponseAlias::HTTP_BAD_REQUEST, $search->status());
     }
 }

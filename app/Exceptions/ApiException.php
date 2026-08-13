@@ -8,48 +8,64 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
+/**
+ * Base class for project exceptions
+ */
 class ApiException extends Exception
 {
-    protected const string ERROR_CAPTION = 'error';
+    protected const string ERROR_CAPTION = 'errors';
 
     protected int $statusCode;
+
+    /**
+     * Additional arguments for exception for custom messages
+     *
+     * @var array
+     */
     protected array $args {
         set {
             $this->args = $value;
         }
     }
 
-    public function __construct(string $message, int $statusCode = ResponseAlias::HTTP_INTERNAL_SERVER_ERROR, array $args = [])
-    {
-        parent::__construct(message:$message);
+    /**
+     * @param  string  $message  Exception message
+     * @param  int  $statusCode  HTTP status code
+     * @param  array  $args  additional arguments for exception for custom messages
+     */
+    public function __construct(
+        string $message,
+        int $statusCode = ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+        array $args = []
+    ) {
+        parent::__construct(message: $message);
         $this->statusCode = $statusCode;
         $this->args = $args;
     }
 
-    public function render(): JsonResponse
+    public function report(): void
     {
         report($this);
-
-        $message = $this->exceptionMessage();
-
-        return new JsonResponse(data: [self::ERROR_CAPTION => $message], status: $this->statusCode, json: false);
     }
 
-    protected function exceptionMessage(): string
+    /**
+     * Render the exception into an HTTP response.
+     *
+     * @return JsonResponse
+     */
+    public function render(): JsonResponse
     {
-        $message = $this->getMessage();
-        if (config('app.debug')) {
-            $reply = get_class($this) . ': ' . $message;
-            $reply .= '. File: ' . $this->getFile();
-            $reply .= '. Line: ' . $this->getLine();
-            if (!empty($this->args)) {
-                $reply .= '. args: ' . var_export($this->args, true);
-            }
+        $message = $this->exceptionMessage();
 
-        } else {
-            $reply = $message;
-        }
+        return new JsonResponse(
+            data: [self::ERROR_CAPTION => $message],
+            status: $this->statusCode,
+            json: false
+        );
+    }
 
-        return $reply;
+    protected function exceptionMessage(): string|array
+    {
+        return $this->getMessage();
     }
 }

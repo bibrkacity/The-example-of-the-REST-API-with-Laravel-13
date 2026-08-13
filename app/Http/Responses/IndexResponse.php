@@ -12,8 +12,7 @@ readonly class IndexResponse implements Responsable
         protected array $data,
         protected mixed $dto,
         protected int $total,
-    ) {
-    }
+    ) {}
 
     public function toResponse($request): JsonResponse
     {
@@ -41,16 +40,16 @@ readonly class IndexResponse implements Responsable
         $links = [];
         $link = $this->dto->toLink(true);
 
-        $lastPage = (int)ceil($this->total / $this->dto->perPage);
+        $lastPage = $this->dto->perPage === 0 ? 1 : (int) ceil($this->total / $this->dto->perPage);
 
         $prefix = str_contains($link, '?') ? '&' : '?';
 
         $links['first'] = $link;
-        $links['last'] = $link . $prefix . 'page=' . $lastPage;
+        $links['last'] = $link.$prefix.'page='.$lastPage;
 
-        $links['prev'] = $this->dto->page > 1 ? $link . $prefix . 'page=' . ($this->dto->page - 1) : null;
+        $links['prev'] = $this->dto->page > 1 ? $link.$prefix.'page='.($this->dto->page - 1) : null;
 
-        $links['next'] = $this->dto->page < $lastPage ? $link . $prefix . 'page=' . ($this->dto->page + 1) : null;
+        $links['next'] = $this->dto->page < $lastPage ? $link.$prefix.'page='.($this->dto->page + 1) : null;
 
         return $links;
     }
@@ -59,7 +58,7 @@ readonly class IndexResponse implements Responsable
     {
         $meta = [];
         $meta['current_page'] = $this->dto->page;
-        $meta['last_page'] = ceil($this->total / $this->dto->perPage);
+        $meta['last_page'] = $this->dto->perPage === 0 ? 1 : (int) ceil($this->total / $this->dto->perPage);
         $meta['path'] = $this->dto->toPath();
         $meta['per_page'] = $this->dto->perPage;
         $meta['total'] = $this->total;

@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 /**
  *  Base class for DTO-classes
@@ -15,30 +15,35 @@ abstract readonly class DTO
 
     /**
      * Page number for pagination. Default 1
+     *
      * @var int
      */
     public int $page;
 
     /**
      * Number of items per page. Default self::PER_PAGE
+     *
      * @var int
      */
     public int $perPage;
 
     /**
      * Search query string. Default null
+     *
      * @var string|null
      */
     public ?string $query;
 
     /**
      * Sorting column name. Default $this->getSortNameDefault()
+     *
      * @var string
      */
     public string $sortName;
 
     /**
      * Sorting direction. Default 'asc'
+     *
      * @var string
      */
     public string $sortDir;
@@ -47,7 +52,7 @@ abstract readonly class DTO
 
     abstract protected function getRouteName(): string;
 
-    public function __construct(Request $request)
+    public function __construct(FormRequest $request)
     {
         $this->fromRequest($request);
     }
@@ -90,16 +95,16 @@ abstract readonly class DTO
         return route($this->getRouteName()).$query;
     }
 
-    protected function fromRequest(Request $request): void
+    protected function fromRequest(FormRequest $request): void
     {
 
         $defaults = $this->getDefaults();
 
-        $this->page = $request->input('page', $defaults['page']);
-        $this->perPage = $request->input('per_page', $defaults['perPage']);
-        $this->query = $request->input('query', $defaults['query']);
-        $this->sortName = $request->input('sort_name', $defaults['sortName']);
-        $this->sortDir = $request->input('sort_dir', $defaults['sortDir']);
+        $this->page = $request->safe()->input('page', $defaults['page']);
+        $this->perPage = $request->safe()->input('per_page', $defaults['perPage']);
+        $this->query = $request->safe()->input('query', $defaults['query']);
+        $this->sortName = $request->safe()->input('sort_name', $defaults['sortName']);
+        $this->sortDir = $request->safe()->input('sort_dir', $defaults['sortDir']);
 
     }
 

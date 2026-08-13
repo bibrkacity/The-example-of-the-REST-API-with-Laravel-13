@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * DTO for User's list
@@ -12,7 +12,7 @@ readonly class UserDTO extends DTO
     public ?string $email;
 
     #[\Override]
-    protected function fromRequest(Request $request): void
+    protected function fromRequest(FormRequest $request): void
     {
         parent::fromRequest($request);
 
