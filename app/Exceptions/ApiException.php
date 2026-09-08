@@ -43,11 +43,6 @@ class ApiException extends Exception
         $this->args = $args;
     }
 
-    public function report(): void
-    {
-        report($this);
-    }
-
     /**
      * Render the exception into an HTTP response.
      *
